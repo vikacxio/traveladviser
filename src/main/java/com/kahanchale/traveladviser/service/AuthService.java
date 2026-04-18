@@ -4,6 +4,9 @@ import com.kahanchale.traveladviser.dto.LoginRequest;
 import com.kahanchale.traveladviser.dto.LoginResponse;
 import com.kahanchale.traveladviser.dto.RegisterRequest;
 import com.kahanchale.traveladviser.entity.User;
+import com.kahanchale.traveladviser.exception.InvalidCredentialsException;
+import com.kahanchale.traveladviser.exception.ResourceAlreadyExistsException;
+import com.kahanchale.traveladviser.exception.ResourceNotFoundException;
 import com.kahanchale.traveladviser.repository.UserRepository;
 import com.kahanchale.traveladviser.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,7 @@ public class AuthService {
     public LoginResponse register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new ResourceAlreadyExistsException("User with email '" + request.getEmail() + "' already exists");
         }
 
         User user = new User();
@@ -44,10 +47,10 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with email '" + request.getEmail() + "' not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         String token = jwtTokenProvider.generateToken(user.getEmail());
