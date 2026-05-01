@@ -2,6 +2,7 @@ package com.kahanchale.traveladviser.security;
 
 import com.kahanchale.traveladviser.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +30,9 @@ public class SecurityConfig {
         return new JwtAuthenticationFilter();
     }
 
+    @Value("${app.oauth.enabled:false}")
+    private boolean oauthEnabled;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -39,13 +43,16 @@ public class SecurityConfig {
                         .requestMatchers("/", "/auth/login", "/auth/register", "/auth/success").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("/auth/success", true)
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                );
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        if (oauthEnabled) {
+            http.oauth2Login(oauth -> oauth
+                    .defaultSuccessUrl("/auth/success", true)
+                    .userInfoEndpoint(userInfo -> userInfo
+                            .userService(customOAuth2UserService)
+                    )
+            );
+        }
 
         return http.build();
     }
