@@ -11,15 +11,15 @@ import java.util.List;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    // Temporarily using simple distance calculation instead of PostGIS
     @Query(value = "SELECT * FROM places WHERE " +
-            "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lng)) + sin(radians(:lat)) * sin(radians(latitude)))) < :radiusInKm " +
-            "ORDER BY (6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lng)) + sin(radians(:lat)) * sin(radians(latitude)))) " +
-            "LIMIT :limit", nativeQuery = true)
+            "ST_DWithin(location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography, :radiusInMeters) " +
+            "ORDER BY ST_Distance(location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography) " +
+            "LIMIT :limit",
+            nativeQuery = true)
     List<Place> findNearbyPlaces(
             @Param("lat") double latitude,
             @Param("lng") double longitude,
-            @Param("radiusInKm") int radiusInKm,
+            @Param("radiusInMeters") double radiusInMeters,
             @Param("limit") int limit
     );
 

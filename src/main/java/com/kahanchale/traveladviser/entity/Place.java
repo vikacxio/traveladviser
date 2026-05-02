@@ -34,7 +34,7 @@ public class Place {
     @Column(nullable = false)
     private Double longitude;
 
-    @Column(columnDefinition = "geometry(Point,4326)")
+    @Column(columnDefinition = "geography(Point,4326)")
     private Point location;
 
     @Column
