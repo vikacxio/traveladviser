@@ -1,9 +1,12 @@
 package com.kahanchale.traveladviser.service;
 
 import com.kahanchale.traveladviser.dto.PlaceDTO;
+import com.kahanchale.traveladviser.dto.PlaceImageDTO;
 import com.kahanchale.traveladviser.dto.WeatherDto;
 import com.kahanchale.traveladviser.entity.Place;
+import com.kahanchale.traveladviser.entity.PlaceImage;
 import com.kahanchale.traveladviser.entity.Tag;
+import com.kahanchale.traveladviser.repository.PlaceImageRepository;
 import com.kahanchale.traveladviser.repository.PlaceRepository;
 import com.kahanchale.traveladviser.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ public class RecommendationService {
 
     @Autowired
     private PlaceRepository placeRepository;
+
+    @Autowired
+    private PlaceImageRepository placeImageRepository;
 
     @Autowired
     private TagRepository tagRepository;
@@ -140,6 +146,33 @@ public class RecommendationService {
         if (place.getTags() != null) {
             dto.setTags(place.getTags().stream().map(tag -> tag.getName()).collect(Collectors.toSet()));
         }
+
+        List<PlaceImage> images = placeImageRepository.findByPlaceId(place.getId());
+        if (!images.isEmpty()) {
+            dto.setImages(images.stream().map(image -> {
+                PlaceImageDTO imageDTO = new PlaceImageDTO();
+                imageDTO.setId(image.getId());
+                imageDTO.setPlaceId(place.getId());
+                imageDTO.setImageUrl(image.getImageUrl());
+                imageDTO.setContentType(image.getContentType());
+                imageDTO.setPrimary(image.isPrimary());
+                imageDTO.setImageName(image.getImageName());
+                imageDTO.setImageSize(image.getImageSize());
+                imageDTO.setSource(image.getSource());
+                imageDTO.setSourceUrl(image.getSourceUrl());
+                imageDTO.setCreatedAt(image.getCreatedAt() != null ? image.getCreatedAt().toString() : null);
+                return imageDTO;
+            }).collect(Collectors.toList()));
+
+            PlaceImage primaryImage = images.stream()
+                    .filter(PlaceImage::isPrimary)
+                    .findFirst()
+                    .orElse(images.get(0));
+            dto.setPrimaryImageId(primaryImage.getId());
+            dto.setPrimaryImageSourceUrl(primaryImage.getSourceUrl());
+            dto.setPrimaryImageDownloadUrl("/api/places/" + place.getId() + "/images/" + primaryImage.getId() + "/download");
+        }
+
         return dto;
     }
 }

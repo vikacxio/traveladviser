@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "places")
@@ -74,4 +75,46 @@ public class Place {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags;
+
+    /**
+     * One-to-Many relationship with PlaceImage
+     * A Place can have multiple images
+     */
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PlaceImage> images;
+
+    /**
+     * Helper method to get primary image
+     */
+    @Transient
+    public PlaceImage getPrimaryImage() {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+        return images.stream()
+                .filter(PlaceImage::isPrimary)
+                .findFirst()
+                .orElse(images.get(0));
+    }
+
+    /**
+     * Helper method to add image
+     */
+    public void addImage(PlaceImage image) {
+        if (images == null) {
+            images = new java.util.ArrayList<>();
+        }
+        images.add(image);
+        image.setPlace(this);
+    }
+
+    /**
+     * Helper method to remove image
+     */
+    public void removeImage(PlaceImage image) {
+        if (images != null) {
+            images.remove(image);
+            image.setPlace(null);
+        }
+    }
 }

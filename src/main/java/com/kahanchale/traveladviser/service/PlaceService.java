@@ -1,8 +1,10 @@
 package com.kahanchale.traveladviser.service;
 
 import com.kahanchale.traveladviser.dto.PlaceDTO;
+import com.kahanchale.traveladviser.dto.PlaceImageDTO;
 import com.kahanchale.traveladviser.dto.SearchPlacesRequest;
 import com.kahanchale.traveladviser.entity.Place;
+import com.kahanchale.traveladviser.entity.PlaceImage;
 import com.kahanchale.traveladviser.repository.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,6 +71,30 @@ public class PlaceService {
         dto.setCountry(place.getCountry());
         if (place.getTags() != null) {
             dto.setTags(place.getTags().stream().map(tag -> tag.getName()).collect(Collectors.toSet()));
+        }
+
+        if (place.getImages() != null) {
+            dto.setImages(place.getImages().stream().map(image -> {
+                PlaceImageDTO imageDTO = new PlaceImageDTO();
+                imageDTO.setId(image.getId());
+                imageDTO.setPlaceId(place.getId());
+                imageDTO.setImageUrl(image.getImageUrl());
+                imageDTO.setContentType(image.getContentType());
+                imageDTO.setPrimary(image.isPrimary());
+                imageDTO.setImageName(image.getImageName());
+                imageDTO.setImageSize(image.getImageSize());
+                imageDTO.setSource(image.getSource());
+                imageDTO.setSourceUrl(image.getSourceUrl());
+                imageDTO.setCreatedAt(image.getCreatedAt() != null ? image.getCreatedAt().toString() : null);
+                return imageDTO;
+            }).collect(Collectors.toList()));
+        }
+
+        PlaceImage primaryImage = place.getPrimaryImage();
+        if (primaryImage != null) {
+            dto.setPrimaryImageId(primaryImage.getId());
+            dto.setPrimaryImageSourceUrl(primaryImage.getSourceUrl());
+            dto.setPrimaryImageDownloadUrl("/api/places/" + place.getId() + "/images/" + primaryImage.getId() + "/download");
         }
         return dto;
     }

@@ -3,6 +3,7 @@ package com.kahanchale.traveladviser.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -23,4 +24,8 @@ public class PlaceDTO {
     private String state;
     private String country;
     private Set<String> tags;
+    private Long primaryImageId;
+    private String primaryImageSourceUrl;
+    private String primaryImageDownloadUrl;
+    private List<PlaceImageDTO> images;
 }
