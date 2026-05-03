@@ -1,8 +1,7 @@
 package com.kahanchale.traveladviser.controller;
 
 import com.kahanchale.traveladviser.dto.PlaceDTO;
-import com.kahanchale.traveladviser.dto.NearbyPlacesRequest;
-import com.kahanchale.traveladviser.dto.SearchPlacesRequest;
+import com.kahanchale.traveladviser.response.SearchPlacesRequest;
 import com.kahanchale.traveladviser.service.PlaceService;
 import com.kahanchale.traveladviser.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;

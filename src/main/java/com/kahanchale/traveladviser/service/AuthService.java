@@ -1,8 +1,8 @@
 package com.kahanchale.traveladviser.service;
 
-import com.kahanchale.traveladviser.dto.LoginRequest;
-import com.kahanchale.traveladviser.dto.LoginResponse;
-import com.kahanchale.traveladviser.dto.RegisterRequest;
+import com.kahanchale.traveladviser.request.LoginRequest;
+import com.kahanchale.traveladviser.response.LoginResponse;
+import com.kahanchale.traveladviser.request.RegisterRequest;
 import com.kahanchale.traveladviser.entity.User;
 import com.kahanchale.traveladviser.exception.InvalidCredentialsException;
 import com.kahanchale.traveladviser.exception.ResourceAlreadyExistsException;

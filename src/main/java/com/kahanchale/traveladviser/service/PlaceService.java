@@ -2,7 +2,7 @@ package com.kahanchale.traveladviser.service;
 
 import com.kahanchale.traveladviser.dto.PlaceDTO;
 import com.kahanchale.traveladviser.dto.PlaceImageDTO;
-import com.kahanchale.traveladviser.dto.SearchPlacesRequest;
+import com.kahanchale.traveladviser.response.SearchPlacesRequest;
 import com.kahanchale.traveladviser.entity.Place;
 import com.kahanchale.traveladviser.entity.PlaceImage;
 import com.kahanchale.traveladviser.repository.PlaceRepository;

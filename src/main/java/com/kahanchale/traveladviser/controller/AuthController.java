@@ -1,8 +1,8 @@
 package com.kahanchale.traveladviser.controller;
 
-import com.kahanchale.traveladviser.dto.LoginRequest;
-import com.kahanchale.traveladviser.dto.LoginResponse;
-import com.kahanchale.traveladviser.dto.RegisterRequest;
+import com.kahanchale.traveladviser.request.LoginRequest;
+import com.kahanchale.traveladviser.response.LoginResponse;
+import com.kahanchale.traveladviser.request.RegisterRequest;
 import com.kahanchale.traveladviser.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

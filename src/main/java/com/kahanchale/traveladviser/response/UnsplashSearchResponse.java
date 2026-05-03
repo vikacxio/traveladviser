@@ -1,5 +1,7 @@
-package com.kahanchale.traveladviser.dto;
+package com.kahanchale.traveladviser.response;
 
+
+import com.kahanchale.traveladviser.dto.UnsplashPhotoDTO;
 
 public class UnsplashSearchResponse {
     private int total;

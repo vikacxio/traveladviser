@@ -1,7 +1,9 @@
-package com.kahanchale.traveladviser.dto;
+package com.kahanchale.traveladviser.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kahanchale.traveladviser.dto.WeatherDescription;
+import com.kahanchale.traveladviser.dto.WeatherMain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

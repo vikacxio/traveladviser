@@ -1,6 +1,6 @@
 package com.kahanchale.traveladviser.service;
 
-import com.kahanchale.traveladviser.dto.ImageUploadRequest;
+import com.kahanchale.traveladviser.request.ImageUploadRequest;
 import com.kahanchale.traveladviser.dto.PlaceImageDTO;
 import com.kahanchale.traveladviser.dto.UnsplashPhotoDTO;
 import com.kahanchale.traveladviser.entity.Place;

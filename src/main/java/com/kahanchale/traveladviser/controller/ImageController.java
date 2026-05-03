@@ -1,6 +1,6 @@
 package com.kahanchale.traveladviser.controller;
 
-import com.kahanchale.traveladviser.dto.ImageUploadRequest;
+import com.kahanchale.traveladviser.request.ImageUploadRequest;
 import com.kahanchale.traveladviser.dto.PlaceImageDTO;
 import com.kahanchale.traveladviser.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;

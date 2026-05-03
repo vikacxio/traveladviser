@@ -1,4 +1,4 @@
-package com.kahanchale.traveladviser.dto;
+package com.kahanchale.traveladviser.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.kahanchale.traveladviser.service;
 
 import com.kahanchale.traveladviser.dto.UnsplashPhotoDTO;
-import com.kahanchale.traveladviser.dto.UnsplashSearchResponse;
+import com.kahanchale.traveladviser.response.UnsplashSearchResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

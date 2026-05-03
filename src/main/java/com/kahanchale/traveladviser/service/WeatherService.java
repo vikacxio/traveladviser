@@ -2,7 +2,7 @@ package com.kahanchale.traveladviser.service;
 
 import com.kahanchale.traveladviser.client.WeatherClient;
 import com.kahanchale.traveladviser.dto.WeatherDto;
-import com.kahanchale.traveladviser.dto.WeatherResponse;
+import com.kahanchale.traveladviser.response.WeatherResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
