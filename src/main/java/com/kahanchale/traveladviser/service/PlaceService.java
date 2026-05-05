@@ -54,6 +54,14 @@ public class PlaceService {
         return places.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<PlaceDTO> searchPlacesByName(String query, Integer limit) {
+        List<Place> places = placeRepository.findByNameContaining(query);
+        return places.stream()
+                .limit(limit != null ? limit : 10)
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     private PlaceDTO convertToDTO(Place place) {
         PlaceDTO dto = new PlaceDTO();
         dto.setId(place.getId());

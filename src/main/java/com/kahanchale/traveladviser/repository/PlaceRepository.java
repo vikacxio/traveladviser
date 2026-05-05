@@ -31,4 +31,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     // Find places by state
     List<Place> findByState(String state);
+
+    // Find places by name containing the search query
+    @Query("SELECT p FROM Place p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) ORDER BY p.name")
+    List<Place> findByNameContaining(String query);
 }

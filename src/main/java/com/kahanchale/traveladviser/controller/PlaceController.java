@@ -90,4 +90,17 @@ public class PlaceController {
         PlaceDTO place = placeService.getPlaceById(id);
         return ResponseEntity.ok(place);
     }
+
+    /**
+     * Search places by name (autocomplete)
+     * Returns places whose names contain the search query
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<PlaceDTO>> searchPlacesByName(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "10") Integer limit
+    ) {
+        List<PlaceDTO> places = placeService.searchPlacesByName(query, limit);
+        return ResponseEntity.ok(places);
+    }
 }
