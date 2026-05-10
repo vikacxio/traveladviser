@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +36,32 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(HttpStatusCodeException.class)
+    public ResponseEntity<ErrorResponse> handleHttpStatusCodeException(HttpStatusCodeException ex) {
+        String message = ex.getResponseBodyAsString();
+        if (message == null || message.isBlank()) {
+            message = ex.getStatusText();
+        }
+        ErrorResponse error = new ErrorResponse(
+                ex.getStatusCode().value(),
+                message,
+                ex.getStatusCode().toString(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, ex.getStatusCode());
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getStatusCode().value(),
+                ex.getReason() != null ? ex.getReason() : ex.getMessage(),
+                ex.getStatusCode().toString(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, ex.getStatusCode());
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex) {
         ErrorResponse error = new ErrorResponse(
@@ -42,6 +71,17 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorResponse> handleHttpClientError(HttpClientErrorException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getStatusCode().value(),
+                ex.getStatusText() + ": " + ex.getMessage(),
+                "HTTP_CLIENT_ERROR",
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, ex.getStatusCode());
     }
 
     @ExceptionHandler(Exception.class)

@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,6 +33,9 @@ public class ImageService {
 
     @Autowired
     private UnsplashService unsplashService;
+
+    @Autowired
+    private WikimediaService wikimediaService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 
@@ -91,6 +96,112 @@ public class ImageService {
 
         log.info("Stored {} images from Unsplash for place: {}", storedImages.size(), place.getName());
         return storedImages;
+    }
+
+    /**
+     * Fetch Wikimedia images for a single place and store them
+     */
+    public List<PlaceImageDTO> fetchAndStoreWikimediaImages(Long placeId, int count) {
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new RuntimeException("Place not found with ID: " + placeId));
+
+        List<WikimediaService.WikimediaImageData> wikimediaImages = wikimediaService.fetchImagesForPlace(place.getName(), count);
+        if (wikimediaImages.isEmpty()) {
+            log.warn("No Wikimedia images found for place: {}", place.getName());
+            return Collections.emptyList();
+        }
+
+        List<PlaceImageDTO> storedImages = wikimediaImages.stream()
+                .map(image -> storeWikimediaImage(place, image))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        log.info("Stored {} Wikimedia images for place: {}", storedImages.size(), place.getName());
+        return storedImages;
+    }
+
+    /**
+     * Fetch Wikimedia images for all places with non-null descriptions and store them
+     */
+    public List<PlaceImageDTO> fetchAndStoreWikimediaImagesForPlacesWithDescription(int countPerPlace) {
+        List<Place> places = placeRepository.findByDescriptionIsNotNull();
+        if (places.isEmpty()) {
+            log.warn("No places found with non-null description");
+            return Collections.emptyList();
+        }
+
+        List<PlaceImageDTO> storedImages = new ArrayList<>();
+        for (Place place : places) {
+            if (place.getName() == null || place.getName().isBlank()) {
+                continue;
+            }
+            List<WikimediaService.WikimediaImageData> wikimediaImages = wikimediaService.fetchImagesForPlace(place.getName(), countPerPlace);
+            wikimediaImages.stream()
+                    .map(image -> storeWikimediaImage(place, image))
+                    .filter(Objects::nonNull)
+                    .forEach(storedImages::add);
+        }
+
+        log.info("Stored {} Wikimedia images for {} places with description", storedImages.size(), places.size());
+        return storedImages;
+    }
+
+    /**
+     * Store single Wikimedia image
+     */
+    private PlaceImageDTO storeWikimediaImage(Place place, WikimediaService.WikimediaImageData image) {
+        if (image == null || image.getImageUrl() == null) {
+            log.warn("Skipping Wikimedia image with missing URL for place: {}", place.getName());
+            return null;
+        }
+
+        String imageUrl = image.getImageUrl();
+        if (placeImageRepository.existsByPlaceIdAndSourceUrl(place.getId(), imageUrl)) {
+            log.info("Skipping duplicate Wikimedia image URL for place {}: {}", place.getId(), imageUrl);
+            return null;
+        }
+
+        byte[] imageBytes = wikimediaService.downloadImage(imageUrl);
+        if (imageBytes == null || imageBytes.length == 0) {
+            log.warn("Skipping Wikimedia image with empty download for place: {}", place.getName());
+            return null;
+        }
+
+        PlaceImage placeImage = new PlaceImage();
+        placeImage.setPlace(place);
+        placeImage.setImageData(imageBytes);
+        placeImage.setImageSize((long) imageBytes.length);
+        placeImage.setContentType(image.getMime() != null ? image.getMime() : "image/jpeg");
+        placeImage.setImageName(buildWikimediaImageName(image));
+        placeImage.setSource("WIKIMEDIA");
+        String cleanSourceUrl = stripQueryParameters(imageUrl);
+        placeImage.setSourceUrl(cleanSourceUrl);
+        boolean shouldBePrimary = placeImageRepository.findPrimaryImageByPlaceId(place.getId()).isEmpty();
+        placeImage.setPrimary(shouldBePrimary);
+        if (shouldBePrimary) {
+            unsetAllPrimaryForPlace(place.getId());
+        }
+
+        PlaceImage saved = placeImageRepository.save(placeImage);
+        log.info("Stored Wikimedia image for place: {}", place.getName());
+        return convertToDTO(saved);
+    }
+
+    private String buildWikimediaImageName(WikimediaService.WikimediaImageData image) {
+        String title = image.getTitle() != null ? image.getTitle() : "wikimedia_image_" + System.currentTimeMillis();
+        String sanitized = title.replaceAll("[^a-zA-Z0-9\\-_ ]", "").trim().replace(' ', '_');
+        if (sanitized.isBlank()) {
+            sanitized = "wikimedia_image_" + System.currentTimeMillis();
+        }
+        return sanitized.length() > 255 ? sanitized.substring(0, 255) : sanitized;
+    }
+
+    private String stripQueryParameters(String url) {
+        if (url == null) {
+            return null;
+        }
+        int idx = url.indexOf('?');
+        return idx > 0 ? url.substring(0, idx) : url;
     }
 
     /**
