@@ -31,3 +31,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend / Node.js ###
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/.sass-cache/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+### Local environment / OS files ###
+.env
+.env.*
+.DS_Store
+*.log
