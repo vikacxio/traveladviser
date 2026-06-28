@@ -1,0 +1,34 @@
+<div class="min-h-screen bg-slate-50">
+  <header class="bg-white border-b border-slate-200">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+      <div>
+        <a routerLink="/home" class="flex items-center gap-2 text-xl font-semibold text-slate-900">
+          <img src="assets/kahanchale.png" alt="logo" class="h-8 w-8 object-contain" />
+          Kahanchale
+        </a>
+      </div>
+      <nav class="flex items-center gap-4 text-sm text-slate-600">
+        <a routerLink="/home" class="hover:text-slate-900">Home</a>
+        <ng-container *ngIf="isLoggedIn; else loggedOutNav">
+          <a routerLink="/split-expenses" class="hover:text-slate-900">SplitExpenses</a>
+          <a routerLink="/chat" class="hover:text-slate-900">Chat</a>
+          <a routerLink="/profile" class="hover:text-slate-900">{{ userName }}</a>
+          <button
+            type="button"
+            (click)="logout()"
+            class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900">
+            Logout
+          </button>
+        </ng-container>
+        <ng-template #loggedOutNav>
+          <a routerLink="/auth" class="hover:text-slate-900">Login</a>
+          <a routerLink="/auth/signup" class="rounded-full border border-slate-900 bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Sign Up</a>
+        </ng-template>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <router-outlet></router-outlet>
+  </main>
+</div>

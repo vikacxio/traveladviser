@@ -1,0 +1,47 @@
+<div class="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+  <div class="relative overflow-hidden rounded-3xl bg-slate-100">
+    <img *ngIf="getCurrentImageUrl()" [src]="getCurrentImageUrl()" [alt]="place.name" class="h-52 w-full object-cover" />
+    <div *ngIf="!getCurrentImageUrl()" class="flex h-52 items-center justify-center text-slate-500">No image available</div>
+
+    <ng-container *ngIf="getTotalImages() > 1">
+      <button
+        type="button"
+        (click)="previousImage($event)"
+        aria-label="Previous image"
+        class="absolute left-2 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        (click)="nextImage($event)"
+        aria-label="Next image"
+        class="absolute right-2 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+
+      <div class="pointer-events-none absolute bottom-2 right-2 z-20 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
+        {{ currentImageIndex + 1 }}/{{ getTotalImages() }}
+      </div>
+    </ng-container>
+  </div>
+  <div class="mt-4">
+    <div class="flex items-center justify-between gap-4">
+      <h3 class="text-lg font-semibold text-slate-900">{{ place.name }}</h3>
+      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{ place.priceLevel || 'N/A' }}</span>
+    </div>
+    <p class="mt-2 text-sm text-slate-600 line-clamp-3">{{ place.description }}</p>
+    <div class="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+      <span>{{ place.city }}, {{ place.state }}</span>
+      <span *ngIf="distance()">• {{ distance() }}</span>
+    </div>
+    <div class="mt-4 flex items-center justify-between">
+      <span class="text-sm font-semibold text-slate-900">{{ place.avgRating || 0 }}/5</span>
+      <button type="button" (click)="viewPlace.emit(place)" class="rounded-2xl bg-slate-900 px-4 py-2 text-sm text-white hover:bg-slate-700">View</button>
+    </div>
+  </div>
+</div>
